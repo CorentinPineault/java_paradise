@@ -4,14 +4,14 @@ import com.formation.app.Trip;
 
 import java.util.List;
 
-public interface TripDao {
-    Long createTrip(Trip trip);
+public interface TripDao<T> {
+    Long createTrip(T obj);
 
-    Trip findTripById(Long id);
+    T findTripById(Long id);
 
-    boolean updateTrip(Trip trip);
+    boolean updateTrip(T obj);
 
-    boolean removeTrip(Trip trip);
+    boolean removeTrip(T objp);
 
-    List<Trip> findAllTrip();
+    List<T> findAllTrip();
 }

@@ -6,9 +6,10 @@ import com.formation.app.dao.TripDao;
 import com.formation.app.util.ConnectionManager;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
-public class JdbcTripDao extends JdbcDao implements TripDao {
+public class JdbcTripDao extends JdbcDao implements TripDao<Trip> {
     @Override
     public Long createTrip(Trip trip) {
         Trip createdTrip = null;
@@ -66,14 +67,18 @@ public class JdbcTripDao extends JdbcDao implements TripDao {
     @Override
     public boolean updateTrip(Trip trip) {
         boolean success = false;
-        String query = "UPDATE * FROM Trip WHERE id=?";
+        String query = "UPDATE Trip SET lieuDepart = ?, lieuArrivee = ?, prix = ? WHERE id=?";
         Connection connection = ConnectionManager.getConnection();
 
         try (PreparedStatement pst = ConnectionManager.getConnection().prepareStatement(query)) {
-            pst.setLong(1, trip.getId());
-            ResultSet rs = pst.executeQuery();
+            pst.setLong(1, trip.getLieuDepart());
+            pst.setLong(2, trip.getLieuArrivee());
+            pst.setFloat(3, trip.getPrix());
+            pst.setLong(4, trip.getId());
+            success = pst.executeUpdate() > 0;
 
-            success = true;
+            connection.commit();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -87,9 +92,10 @@ public class JdbcTripDao extends JdbcDao implements TripDao {
         Connection connection = ConnectionManager.getConnection();
         try (PreparedStatement pst = ConnectionManager.getConnection().prepareStatement(query)) {
             pst.setLong(1, trip.getId());
-            ResultSet rs = pst.executeQuery();
+            success = pst.executeUpdate() > 0;
 
-            success = true;
+            connection.commit();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -98,7 +104,7 @@ public class JdbcTripDao extends JdbcDao implements TripDao {
 
     @Override
     public List<Trip> findAllTrip() {
-        List<Trip> listTrips = null;
+        List<Trip> listTrips = new ArrayList<Trip>();
         Trip tempTrip = null;
         String query = "SELECT * FROM Trip";
         Connection connection = ConnectionManager.getConnection();

@@ -4,14 +4,14 @@ import com.formation.app.Place;
 
 import java.util.List;
 
-public interface PlaceDao {
-    Long createPlace(Place place);
+public interface PlaceDao<T> {
+    Long createPlace(T obj);
 
-    Place findPlaceById(Long id);
+    T findPlaceById(Long id);
 
-    boolean updatePlace(Place place);
+    boolean updatePlace(T obj);
 
-    boolean removePlace(Place place);
+    boolean removePlace(T obj);
 
-    List<Place> findAllPlace();
+    List<T> findAllPlace();
 }

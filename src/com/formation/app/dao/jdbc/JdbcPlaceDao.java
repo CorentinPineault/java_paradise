@@ -5,9 +5,10 @@ import com.formation.app.dao.PlaceDao;
 import com.formation.app.util.ConnectionManager;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
-public class JdbcPlaceDao extends JdbcDao implements PlaceDao{
+public class JdbcPlaceDao extends JdbcDao implements PlaceDao<Place>{
     @Override
     public Long createPlace(Place place) {
         Place createdPlace = null;
@@ -62,14 +63,16 @@ public class JdbcPlaceDao extends JdbcDao implements PlaceDao{
     @Override
     public boolean updatePlace(Place place) {
         boolean success = false;
-        String query = "UPDATE * FROM Place WHERE id=?";
+        String query = "UPDATE Place SET name = ? WHERE id = ?";
         Connection connection = ConnectionManager.getConnection();
 
         try (PreparedStatement pst = ConnectionManager.getConnection().prepareStatement(query)) {
-            pst.setLong(1, place.getId());
-            ResultSet rs = pst.executeQuery();
+            pst.setString(1, place.getName());
+            pst.setLong(2, place.getId());
+            success = pst.executeUpdate() > 0;
 
-            success = true;
+            connection.commit();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -83,9 +86,10 @@ public class JdbcPlaceDao extends JdbcDao implements PlaceDao{
         Connection connection = ConnectionManager.getConnection();
         try (PreparedStatement pst = ConnectionManager.getConnection().prepareStatement(query)) {
             pst.setLong(1, place.getId());
-            ResultSet rs = pst.executeQuery();
+            success = pst.executeUpdate() > 0;
 
-            success = true;
+            connection.commit();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -94,7 +98,7 @@ public class JdbcPlaceDao extends JdbcDao implements PlaceDao{
 
     @Override
     public List<Place> findAllPlace() {
-        List<Place> listPlaces = null;
+        List<Place> listPlaces = new ArrayList<Place>();
         Place tempPlace = null;
         String query = "SELECT * FROM Place";
         Connection connection = ConnectionManager.getConnection();
