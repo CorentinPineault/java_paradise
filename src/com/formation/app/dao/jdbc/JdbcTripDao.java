@@ -1,6 +1,5 @@
 package com.formation.app.dao.jdbc;
 
-import com.formation.app.Place;
 import com.formation.app.Trip;
 import com.formation.app.dao.TripDao;
 import com.formation.app.util.ConnectionManager;
@@ -12,7 +11,7 @@ import java.util.List;
 public class JdbcTripDao extends JdbcDao implements TripDao<Trip> {
     @Override
     public Long createTrip(Trip trip) {
-        Trip createdTrip = null;
+        Long id = null;
         String query = "INSERT INTO Trip(lieuDepart, lieuArrivee, prix) VALUES(?, ?, ?)";
         Connection connection = ConnectionManager.getConnection();
         try (PreparedStatement pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -24,9 +23,7 @@ public class JdbcTripDao extends JdbcDao implements TripDao<Trip> {
             // Fetching generated id from database during insert
             ResultSet resultSet = pst.getGeneratedKeys();
             resultSet.next();
-            Long id = resultSet.getLong(1);
-
-            createdTrip = findTripById(id);
+            id = resultSet.getLong(1);
 
             connection.commit();
 
@@ -38,13 +35,12 @@ public class JdbcTripDao extends JdbcDao implements TripDao<Trip> {
                 e2.printStackTrace();
             }
         }
-        return createdTrip.getId();
+        return id;
     }
 
     @Override
     public Trip findTripById(Long id) {
         String query = "SELECT * FROM Trip WHERE id=?";
-        Connection connection = ConnectionManager.getConnection();
         Trip foundTrip = null;
 
         try (PreparedStatement pst = ConnectionManager.getConnection().prepareStatement(query)) {
@@ -104,10 +100,9 @@ public class JdbcTripDao extends JdbcDao implements TripDao<Trip> {
 
     @Override
     public List<Trip> findAllTrip() {
-        List<Trip> listTrips = new ArrayList<Trip>();
-        Trip tempTrip = null;
+        List<Trip> listTrips = new ArrayList<>();
+        Trip tempTrip;
         String query = "SELECT * FROM Trip";
-        Connection connection = ConnectionManager.getConnection();
 
         try (PreparedStatement pst = ConnectionManager.getConnection().prepareStatement(query)) {
             ResultSet rs = pst.executeQuery();

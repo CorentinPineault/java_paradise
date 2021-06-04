@@ -11,7 +11,7 @@ import java.util.List;
 public class JdbcPlaceDao extends JdbcDao implements PlaceDao<Place>{
     @Override
     public Long createPlace(Place place) {
-        Place createdPlace = null;
+        Long id = null;
         String query = "INSERT INTO Place(name) VALUES(?)";
         Connection connection = ConnectionManager.getConnection();
         try (PreparedStatement pst = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
@@ -21,9 +21,8 @@ public class JdbcPlaceDao extends JdbcDao implements PlaceDao<Place>{
             // Fetching generated id from database during insert
             ResultSet resultSet = pst.getGeneratedKeys();
             resultSet.next();
-            Long id = resultSet.getLong(1);
 
-            createdPlace = findPlaceById(id);
+            id = resultSet.getLong(1);
 
             connection.commit();
 
@@ -35,13 +34,12 @@ public class JdbcPlaceDao extends JdbcDao implements PlaceDao<Place>{
                 e2.printStackTrace();
             }
         }
-        return createdPlace.getId();
+        return id;
     }
 
     @Override
     public Place findPlaceById(Long id) {
         String query = "SELECT * FROM Place WHERE id=?";
-        Connection connection = ConnectionManager.getConnection();
         Place foundPlace = null;
 
         try (PreparedStatement pst = ConnectionManager.getConnection().prepareStatement(query)) {
@@ -98,10 +96,9 @@ public class JdbcPlaceDao extends JdbcDao implements PlaceDao<Place>{
 
     @Override
     public List<Place> findAllPlace() {
-        List<Place> listPlaces = new ArrayList<Place>();
-        Place tempPlace = null;
+        List<Place> listPlaces = new ArrayList<>();
+        Place tempPlace;
         String query = "SELECT * FROM Place";
-        Connection connection = ConnectionManager.getConnection();
 
         try (PreparedStatement pst = ConnectionManager.getConnection().prepareStatement(query)) {
             ResultSet rs = pst.executeQuery();
