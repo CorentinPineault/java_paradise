@@ -57,9 +57,13 @@ public class Launcher {
                         place = placeDao.findPlaceById(Long.parseLong(input));
 
                         System.out.println("Place found : " + place.getName());
-                    } catch (Exception e) {
-                        System.err.println("Place not found");
-                        System.out.println();
+
+                    } catch (NumberFormatException e1) {
+                        System.err.println("Incorrect id");
+                    } catch (NullPointerException e2) {
+                        System.err.println("Place with id " + input + " doesn't exist");
+                    } catch (Exception e3) {
+                        e3.printStackTrace();
                     }
                     break;
 
@@ -79,10 +83,14 @@ public class Launcher {
                         placeDao.updatePlace(place);
                         System.out.println("Name changed");
 
+                    } catch (NumberFormatException e1) {
+                        System.err.println("Incorrect id");
+                    } catch (NullPointerException e2) {
+                        System.err.println("Place with id " + input + " doesn't exist");
+                    } catch (Exception e3) {
+                        e3.printStackTrace();
                     }
-                    catch (Exception e) {
-                        e.printStackTrace();
-                    }
+
                     break;
 
                 case "4":
@@ -116,31 +124,52 @@ public class Launcher {
                     break;
 
                 case "5":
-                    try {
-                        trip = new Trip();
 
+                    trip = new Trip();
+
+                    try {
                         System.out.print("Departure : please enter the id of the place : ");
                         input = scanner.nextLine();
 
                         trip.setLieuDepart(Long.parseLong(input));
+                    } catch (NumberFormatException e1) {
+                        System.err.println("Incorrect id");
+                        break;
+                    }
 
+                    try {
                         System.out.print("Destination : please enter the id of the place : ");
                         input = scanner.nextLine();
 
                         trip.setLieuArrivee(Long.parseLong(input));
 
+                    } catch (NumberFormatException e2) {
+                        System.err.println("Incorrect id");
+                        break;
+                    }
+
+                    try {
                         System.out.print("Price : ");
                         input = scanner.nextLine();
 
                         trip.setPrix(Float.parseFloat(input));
+                    }
+                    catch (NumberFormatException e3) {
+                        System.err.println("Incorrect input: it isn't a floating point number.");
+                        break;
+                    }
 
-                        System.out.println("Trip added with id " + tripDao.createTrip(trip));
+                    try {
+                        Long id = tripDao.createTrip(trip);
+
+                        System.out.println("Trip added with id " + id);
                     }
                     catch (Exception e){
                         e.printStackTrace();
                     }
-
-                    break;
+                    finally {
+                        break;
+                    }
 
                 case "6":
                     try {
@@ -154,11 +183,13 @@ public class Launcher {
                                 + " - "
                                 + placeDao.findPlaceById(trip.getLieuArrivee()).getName()
                                 + " for " + trip.getPrix());
+                    } catch (NumberFormatException e1) {
+                        System.err.println("Incorrect id");
+                    } catch (NullPointerException e2) {
+                        System.err.println("Trip with id " + input + " doesn't exist");
+                    } catch (Exception e3) {
+                        e3.printStackTrace();
                     }
-                    catch (Exception e){
-                        System.err.println("Trip not found");
-                    }
-                    break;
 
                 case "7":
                     try {
@@ -188,8 +219,12 @@ public class Launcher {
                         }
 
                         System.out.println();
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                    } catch (NumberFormatException e1) {
+                        System.err.println("Incorrect id");
+                    } catch (NullPointerException e2) {
+                        System.err.println("Place with id " + input + " doesn't exist");
+                    } catch (Exception e3) {
+                        e3.printStackTrace();
                     }
                     break;
 
